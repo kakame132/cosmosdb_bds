@@ -43,7 +43,7 @@ extension ResourceTypeKeys on ResourceType {
     ResourceType.udf: 'udfs',
     ResourceType.trigger: 'triggers',
     ResourceType.item: 'docs',
-    ResourceType.pkranges: 'pkranges'
+    ResourceType.pkranges: 'pkranges',
   };
 
   String get key {

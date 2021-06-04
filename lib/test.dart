@@ -26,7 +26,7 @@ void main() {
         databaseId ,
         collectionId,
       );
-      print(results.toList().length);
+      print(results.toList());
     }
     run("Hồ Chí Minh","Quận 1",1,10);
     // final results = cosmosDB.documents.query(

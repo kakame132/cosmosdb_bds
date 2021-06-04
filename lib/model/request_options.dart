@@ -44,11 +44,6 @@ class CosmosRequestOptions {
   });
   /// Generates HTTP headers for the given options
   Map<String, String> toHeaders() => {
-        // FeedOptions options = new FeedOptions();  
-        // options.PopulateQueryMetrics = true;
-        // options.MaxItemCount = -1;
-        // options.EnableCrossPartitionQuery = true;
-        // options.MaxDegreeOfParallelism = this.maxDegreesOfParallelism;
           'x-ms-documentdb-partitionkey': jsonEncode(partitionKeys),
           'x-ms-max-item-count': maxItemCount.toString(),
           'x-ms-documentdb-query-enablecrosspartition':
