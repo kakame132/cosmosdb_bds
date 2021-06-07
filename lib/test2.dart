@@ -23,8 +23,8 @@ Future<List> get_config(String model) async{
     databaseId ,
     collectionId,
   );
-  Map index_dict=jsonDecode(results.toList()[0]['list']);
-  int size=results.toList()[0]['size'];
+  Map index_dict=jsonDecode(results.toList().last['list']);
+  int size=results.toList().last['size'];
   // return a;
   // print(jsonDecode(a));
   return [size,index_dict];
@@ -59,14 +59,15 @@ void address_split(a,List c){
   }
 }
 
-void predict(String type,Map index,int size,String region,String district,int surface,int width,int length,int toilets,int bedrooms) async{
+void predict(String type,Map index,int size,String category,String region,String district,int surface,int width,int length,int toilets,int bedrooms) async{
     List output = List.filled(size,0);
     output[index['surface']] = surface;
     output[index['width']] = width;
     output[index['length']] = length;
     output[index['toilets']] = toilets;
-    output[index['bedrooms']] = bedrooms;
-    
+    output[index['bedrooms']] = bedrooms; 
+    if (index.keys.contains(category)){
+          output[index[category]]=1;}
     String result_district = district;
     if (index.keys.contains(result_district)){
           print(1999);
@@ -93,6 +94,9 @@ void predict(String type,Map index,int size,String region,String district,int su
     else if(type=="nhadat247"){
     scoring_uri="http://c2be42d2-165c-496b-a9a8-faba5607fa15.eastus2.azurecontainer.io/score";
     }
+    else if(type=="batdongsan"){
+    scoring_uri="http://a0b4fc63-f8a7-4c9a-8e71-c92c32b82e64.eastus2.azurecontainer.io/score";
+    }
     http.Response response = await http.post(
     Uri.parse(scoring_uri),
     headers: {"Content-Type": "application/json"},
@@ -114,16 +118,22 @@ void main() async{
     List c= await get_config("nhadat247");
     int nhadat_size=c[0];
     Map nhadat_dict=c[1];
+    List d= await get_config("batdongsan");
+    int batdongsan_size=d[0];
+    print(d[1]);
+    Map batdongsan_dict=d[1];
+    
 
-    String testa= "Hà Nội > Long Biên";
+    String testa= "Thành phố Hà Nội > Quận Long Biên";
     List result=[];
     address_split(testa, result);
     print(result);
 
 
-    predict("chotot",chotot_dict, chotot_size,result[0],result[1], 33, 4,8,4,3);
-    // predict("main",main_dict, main_size,'Hà Nội','d Long Biên', 33, 4,8,4,3);
-    // predict("nhadat247",nhadat_dict, nhadat_size,'Hà Nội','d Long Biên', 33, 4,8,4,3);
+    predict("chotot",chotot_dict, chotot_size,"nhà",result[0],result[1], 33, 4,8,4,3);
+    predict("main",main_dict, main_size,"nhà",'Hà Nội','d Long Biên', 33, 4,8,4,3);
+    predict("nhadat247",nhadat_dict, nhadat_size,"nhà",'Hà Nội','d Long Biên', 33, 4,8,4,3);
+    predict("batdongsan",batdongsan_dict, batdongsan_size,"nhà",'Hà Nội','d Long Biên', 33, 4,8,4,3);
 
      // final results = cosmosDB.documents.query(
     //     Query(
