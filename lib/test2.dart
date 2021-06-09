@@ -13,6 +13,7 @@ Future<List> get_config(String model) async{
   // print(documents);
   var collectionId="config";
   var databaseId="data";
+  String count="100";
   final results = await cosmosDB.documents.query(
     Query(
         query:
@@ -22,7 +23,9 @@ Future<List> get_config(String model) async{
         }),
     databaseId ,
     collectionId,
+    count
   );
+  
   Map index_dict=jsonDecode(results.toList().last['list']);
   int size=results.toList().last['size'];
   // return a;
@@ -59,7 +62,7 @@ void address_split(a,List c){
   }
 }
 
-void predict(String type,Map index,int size,String category,String region,String district,int surface,int width,int length,int toilets,int bedrooms) async{
+void predict(String type,Map index,int size,String category,String region,String district,double surface,double width,double length,int toilets,int bedrooms) async{
     List output = List.filled(size,0);
     output[index['surface']] = surface;
     output[index['width']] = width;
@@ -115,12 +118,13 @@ void main() async{
     List b= await get_config("chotot");
     int chotot_size=b[0];
     Map chotot_dict=b[1];
+    
     List c= await get_config("nhadat247");
     int nhadat_size=c[0];
     Map nhadat_dict=c[1];
     List d= await get_config("batdongsan");
     int batdongsan_size=d[0];
-    print(d[1]);
+
     Map batdongsan_dict=d[1];
     
 
@@ -129,11 +133,10 @@ void main() async{
     address_split(testa, result);
     print(result);
 
-
-    predict("chotot",chotot_dict, chotot_size,"nhà",result[0],result[1], 33, 4,8,4,3);
-    predict("main",main_dict, main_size,"nhà",'Hà Nội','d Long Biên', 33, 4,8,4,3);
-    predict("nhadat247",nhadat_dict, nhadat_size,"nhà",'Hà Nội','d Long Biên', 33, 4,8,4,3);
-    predict("batdongsan",batdongsan_dict, batdongsan_size,"nhà",'Hà Nội','d Long Biên', 33, 4,8,4,3);
+    predict("main",main_dict, main_size,"nhà",'Hà Nội','d Long Biên', 33, 4,8,3,4);
+    predict("chotot",chotot_dict, chotot_size,"nhà",'Hà Nội','d Long Biên', 33, 4,8,3,4);
+    predict("nhadat247",nhadat_dict, nhadat_size,"nhà",'Hà Nội','d Long Biên', 33, 4,8,3,4);
+    predict("batdongsan",batdongsan_dict, batdongsan_size,"nhà",'Hà Nội','d Long Biên', 33, 4,8,3,4);
 
      // final results = cosmosDB.documents.query(
     //     Query(

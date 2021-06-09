@@ -38,7 +38,7 @@ class DocumentApi {
 
   /// Executes the query in the given collection
   Future<Iterable<dynamic>> query(
-      Query query , String databaseId, String collectionId,
+      Query query , String databaseId, String collectionId,String count,
       {CosmosRequestOptions? options}) async {
         print((options?.toHeaders() ?? {})
 
@@ -50,7 +50,7 @@ class DocumentApi {
       resourceType: ResourceType.item,
       removeLastPart: true,
       headers: {
-          'x-ms-max-item-count': "1000",
+          'x-ms-max-item-count': count,
           'x-ms-documentdb-query-enablecrosspartition':
               'true',
       }
@@ -60,7 +60,28 @@ class DocumentApi {
     
     return result['Documents'];
   }
+  Future<Iterable<dynamic>> query2(
+      Query query , String databaseId, String collectionId,String count,
+      {CosmosRequestOptions? options}) async {
+        print((options?.toHeaders() ?? {})
 
+        ..addAll({'Content-Type': 'application/query+json'},));
+    final body = query.toMap();
+    final result = await _client.get(
+      'dbs/$databaseId/colls/$collectionId/docs',
+      resourceType: ResourceType.item,
+      removeLastPart: true,
+      headers: {
+          'x-ms-max-item-count': count,
+          'x-ms-documentdb-query-enablecrosspartition':
+              'true',
+      }
+
+        ..addAll({'Content-Type': 'application/query+json'},),
+    );
+    
+    return result['Documents'];
+  }
   /// Replaces the document with the given id with newDocument
   Future<Map<String, dynamic>> replace(Map<String, dynamic> newDocument,
       String databaseId, String collectionId, String documentId,

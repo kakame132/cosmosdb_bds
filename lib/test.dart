@@ -4,8 +4,8 @@ import 'package:cosmosdb/cosmosdb.dart';
 
 void main() {
     final cosmosDB = CosmosDB(
-      masterKey: 'r0EEApAfBwKARscLmgjPzdAYVVxFbLy5pOf2AU0yLL6FrcHFjySI3NYnb5zpHSvVPFkvRKI4yUTTRIZTmt4mCg==',
-      baseUrl: 'https://synapsel1nk.documents.azure.com:443/',
+        masterKey: '9qu5XzdNZTdCNeC2ZWjWqhZbmWVCoT3qFU0M7SS1P82H00dmG8OSvqEnlEGujIpSUB6lGeyc1Q0ERsDuXirLGg==',
+        baseUrl: 'https://synapseliiink.documents.azure.com:443/',
     );
     // get all documents from a collection
     void run(String region,String district, price_from, price_to) async{
@@ -13,20 +13,23 @@ void main() {
       // print(documents);
       String collectionId="final_data";
       String databaseId="data";
-      final results = await cosmosDB.documents.query(
+      String count="20";
+      
+      final results = await cosmosDB.documents.query2(
         Query(
             query:
-                'SELECT c.url_hash,c.bedrooms FROM $collectionId c where c.region=@region and c.district=@district and c.price < @price2 and c.price > @price1',
+                'SELECT * FROM $collectionId c where c.district=@district order by c._ts desc',
             parameters: {
-              'region': region,
+              'region': DateTime.now().millisecondsSinceEpoch,
               'district': district,
               'price1':price_from,
               'price2':price_to
             }),
         databaseId ,
         collectionId,
+        count
       );
-      print(results.toList());
+      print(results.toList().length);
     }
     run("Hồ Chí Minh","Quận 1",1,10);
     // final results = cosmosDB.documents.query(
