@@ -8,7 +8,7 @@ final cosmosDB = CosmosDB(
   baseUrl: 'https://synapseliiink.documents.azure.com:443/',
 );
 // get all documents from a collection
-Future<List> get_district(String model,String region,String district) async{
+Future<List> get_district(String model,String region,String district,String category) async{
   // final documents = await cosmosDB.documents.list('data', 'detail_data');
   // print(documents);
   var collectionId="final_data";
@@ -17,11 +17,12 @@ Future<List> get_district(String model,String region,String district) async{
   final results = await cosmosDB.documents.query(
     Query(
         query:
-            'SELECT * FROM $collectionId c where c.homepage=@model and c.district=@district and c.region=@region ',
+            'SELECT * FROM $collectionId c where c.homepage=@model and c.district=@district and c.region=@region and c.category=@category',
         parameters: {
           'model': model,
           'region': region,
-          'district': district
+          'district': district,
+          'category': category
         }),
     databaseId ,
     collectionId,
@@ -30,7 +31,7 @@ Future<List> get_district(String model,String region,String district) async{
   
     return results.toList();
 }
-Future<List> get_street(String model,String region,String district,String street) async{
+Future<List> get_street(String model,String region,String district,String street,String category) async{
   // final documents = await cosmosDB.documents.list('data', 'detail_data');
   // print(documents);
   var collectionId="final_data";
@@ -44,7 +45,8 @@ Future<List> get_street(String model,String region,String district,String street
           'model': model,
           'region': region,
           'district': district,
-          'street':  street
+          'street':  street,
+          'category': category
         }),
     databaseId ,
     collectionId,
@@ -83,8 +85,8 @@ void address_split(a,List c){
 }
 
 // ignore: public_member_api_docs
-Future<List> find_comps(String category,String region,String district,String street,double surface,double width,double length,int toilets,int bedrooms,double price) async{
-    Future<List> a=get_street(category,region,district,street);
+Future<List> find_comps(String homepage,String region,String district,String street,String category,double surface,double width,double length,int toilets,int bedrooms,double price) async{
+    Future<List> a=get_street(homepage,region,district,street,category);
     List index=[];
     List b = await a;
     List c=[];
@@ -93,7 +95,7 @@ Future<List> find_comps(String category,String region,String district,String str
       Map x={street:c.length};
       index.add(x);
       if (c.length< 20){
-        List d= await get_district(category,region,district);
+        List d= await get_district(homepage,region,district,category);
         print(d.length);
         List e=rank_point2(d, 4, surface, width, length, toilets, bedrooms, price);
         c=c+e;
@@ -103,10 +105,10 @@ Future<List> find_comps(String category,String region,String district,String str
     }
     else{
       c=b;
-      List d= await get_district(category,region,district);
+      List d= await get_district(homepage,region,district,category);
       Map x={street:c.length};
       index.add(x);
-      List e=rank_point2(d, 4, surface, width, length, toilets, bedrooms, price);
+      List e=rank_point2(d, 3, surface, width, length, toilets, bedrooms, price);
       List y=haha(e);
       index=index+y;
       c=c + e;      
@@ -157,7 +159,7 @@ List rank_point(List b,double surface,double width,double length,int toilets,int
       if((bedrooms-1) < b_bedrooms && b_bedrooms<(bedrooms+1)){
         score=score+1;
       }
-      if(score > 0){
+      if(score > 2){
         c.add(b[i]);
       }
     }
@@ -238,14 +240,6 @@ void main() async{
     List result=[];
     address_split(testa, result);
     print(result);
-    List test= await find_comps("nhadat247.com.vn", "Hồ Chí Minh","d Tân Phú","Âu Cơ",75, 6, 12, 3, 3, 24);
+    List test= await find_comps("chotot.com", "Hồ Chí Minh","d 10","Lý Thường Kiệt","nhà",38, 4, 10, 5, 5, 5);
     print(test[1][0]);
-     // final results = cosmosDB.documents.query(
-    //     Query(
-    //         query:
-    //             'SELECT * FROM c WHERE c.url_hash = "2ec52df92ad3febb70afe776f0a44c2a"'),
-    //     'data',
-    //     'detail_data',
-    //   );
-    // print(results);
 }
