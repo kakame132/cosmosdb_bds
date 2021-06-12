@@ -8,7 +8,7 @@ final cosmosDB = CosmosDB(
   baseUrl: 'https://synapseliiink.documents.azure.com:443/',
 );
 // get all documents from a collection
-Future<List> get_district(String model,String region,String district,String category) async{
+Future<List> get_district(String model,String region,String district,String ward,String category) async{
   // final documents = await cosmosDB.documents.list('data', 'detail_data');
   // print(documents);
   var collectionId="final_data";
@@ -17,12 +17,13 @@ Future<List> get_district(String model,String region,String district,String cate
   final results = await cosmosDB.documents.query(
     Query(
         query:
-            'SELECT * FROM $collectionId c where c.homepage=@model and c.district=@district and c.region=@region and c.category=@category',
+            'SELECT * FROM $collectionId c where c.homepage=@model and c.district=@district and c.region=@region and c.category=@category and c.ward=@ward',
         parameters: {
           'model': model,
           'region': region,
           'district': district,
-          'category': category
+          'category': category,
+          'ward':ward
         }),
     databaseId ,
     collectionId,
@@ -82,10 +83,17 @@ void address_split(a,List c){
   else{
     c.add("d "+x[1]);
   }
+  //ward
+  if (x[2].contains('Phường')){
+        c.add(x[2].split("Phường ")[1]);
+  }
+  else if(x[2].contains('Xã')){
+        c.add(x[2].split("Xã ")[1]);
+  }
 }
 
 // ignore: public_member_api_docs
-Future<List> find_comps(String homepage,String region,String district,String street,String category,double surface,double width,double length,int toilets,int bedrooms,double price) async{
+Future<List> find_comps(String homepage,String region,String district,String ward,String street,String category,double surface,double width,double length,int toilets,int bedrooms,double price) async{
     Future<List> a=get_street(homepage,region,district,street,category);
     List index=[];
     List b = await a;
@@ -95,9 +103,9 @@ Future<List> find_comps(String homepage,String region,String district,String str
       Map x={street:c.length};
       index.add(x);
       if (c.length< 20){
-        List d= await get_district(homepage,region,district,category);
+        List d= await get_district(homepage,region,district,ward,category);
         print(d.length);
-        List e=rank_point2(d, 4, surface, width, length, toilets, bedrooms, price);
+        List e=rank_point2(d, 3, surface, width, length, toilets, bedrooms, price);
         c=c+e;
         List y=haha(e);
         index=index+y;
@@ -105,7 +113,7 @@ Future<List> find_comps(String homepage,String region,String district,String str
     }
     else{
       c=b;
-      List d= await get_district(homepage,region,district,category);
+      List d= await get_district(homepage,region,district,ward,category);
       Map x={street:c.length};
       index.add(x);
       List e=rank_point2(d, 3, surface, width, length, toilets, bedrooms, price);
@@ -236,10 +244,10 @@ List haha(List b){
 void main() async{
     // ignore: omit_local_variable_types
 
-    String testa= "Thành phố Hà Nội > Quận Long Biên";
+    String testa= "Thành phố Hà Nội > Quận Long Biên > Phường 10";
     List result=[];
     address_split(testa, result);
     print(result);
-    List test= await find_comps("chotot.com", "Hồ Chí Minh","d 10","Lý Thường Kiệt","nhà",38, 4, 10, 5, 5, 5);
-    print(test[1][0]);
+    List test= await find_comps("nhadat247.com.vn", "Hồ Chí Minh","d 10","15","Lý Thường Kiệt","nhà",38, 4, 10, 5, 5, 5);
+    print(test[1][2]);
 }
