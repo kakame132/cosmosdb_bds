@@ -328,7 +328,7 @@ List haha(List b){
   // print(values[0].runtimeType);
   List result=[];
   for(int i=0;i<keys.length;i++){
-    Map x={keys[i]:values[i].length};
+    Map x={keys[i]:values[i]};
     result.add(x);
   }
   // print("**********************");
@@ -343,5 +343,11 @@ void main() async{
     List result=[];
     address_split(testa, result);
     List test= await find_comps(["nhadat247.com.vn","chotot.com"], "Hồ Chí Minh","d 10","15","Lý Thường Kiệt",["nhà"],38, 4, 10, 5, 5, -1);
-    print(test);
+    //cach lay so luong
+    print(test[0].values.toList()[0].length);
+    //cach lay list ra theo tung duong
+    print(test[0].values.toList()[0]);
+    //cach lay tung record ra trong list ra theo tung duong
+    print(test[0].values.toList()[0][0]);
+
 }
