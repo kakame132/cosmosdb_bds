@@ -8,21 +8,66 @@ final cosmosDB = CosmosDB(
   baseUrl: 'https://synapseliiink.documents.azure.com:443/',
 );
 // get all documents from a collection
-Future<List> get_district(String model,String region,String district,String ward,String category) async{
+Future<List> get_district(List homepage,String region,String district,String ward,List category) async{
   // final documents = await cosmosDB.documents.list('data', 'detail_data');
   // print(documents);
   var collectionId="final_data";
   var databaseId="data";
   String count="-1";
+
+  List condtion=[];
+
+      if(homepage.length==1){
+        if(homepage[0] != "all"){
+          String b='('+'c.homepage='+"'"+homepage[0]+"'"+')';
+          condtion.add(b);
+        }
+      }
+      else if(homepage.length==2){
+        String b='('+'c.homepage='+"'"+homepage[0]+"'"+ 'or c.homepage='+"'"+homepage[1]+"'"')';
+          condtion.add(b);
+      }
+      else if(homepage.length==3){
+        String b='('+'c.homepage='+"'"+homepage[0]+"'"+ 'or c.homepage='+"'"+homepage[1]+"'"'or c.homepage='+"'"+homepage[2]+"'"')';
+          condtion.add(b);
+      }
+
+
+
+      if(category.length==1){
+        if(category[0] != "all"){
+          String b='('+'c.category='+"'"+category[0]+"'"+')';
+          condtion.add(b);
+        }
+      }
+      else{
+        String b="(";
+        for(int i=0;i<category.length;i++){
+            b=b+"c.category = "+"'"+category[i]+"'";
+            if(i+1<category.length){
+              b=b+" or ";
+            }
+            else{
+              b=b+")";
+            }
+        }
+        condtion.add(b);
+      }
+    String query='';
+        for(int i=0;i<condtion.length;i++){
+          query=query+condtion[i];
+          if(i+1<condtion.length){
+            query=query+" and ";
+          }
+        }
+    print(query);
   final results = await cosmosDB.documents.query(
     Query(
         query:
-            'SELECT * FROM $collectionId c where c.homepage=@model and c.district=@district and c.region=@region and c.category=@category and c.ward=@ward',
+            'SELECT * FROM $collectionId c where c.district=@district and c.region=@region and c.ward=@ward and '+query,
         parameters: {
-          'model': model,
           'region': region,
           'district': district,
-          'category': category,
           'ward':ward
         }),
     databaseId ,
@@ -32,22 +77,66 @@ Future<List> get_district(String model,String region,String district,String ward
   
     return results.toList();
 }
-Future<List> get_street(String model,String region,String district,String street,String category) async{
+Future<List> get_street(List homepage,String region,String district,String street,List category) async{
   // final documents = await cosmosDB.documents.list('data', 'detail_data');
   // print(documents);
   var collectionId="final_data";
   var databaseId="data";
   String count="-1";
+  List condtion=[];
+
+      if(homepage.length==1){
+        if(homepage[0] != "all"){
+          String b='('+'c.homepage='+"'"+homepage[0]+"'"+')';
+          condtion.add(b);
+        }
+      }
+      else if(homepage.length==2){
+        String b='('+'c.homepage='+"'"+homepage[0]+"'"+ 'or c.homepage='+"'"+homepage[1]+"'"')';
+          condtion.add(b);
+      }
+      else if(homepage.length==3){
+        String b='('+'c.homepage='+"'"+homepage[0]+"'"+ 'or c.homepage='+"'"+homepage[1]+"'"'or c.homepage='+"'"+homepage[2]+"'"')';
+          condtion.add(b);
+      }
+
+
+
+      if(category.length==1){
+        if(category[0] != "all"){
+          String b='('+'c.category='+"'"+category[0]+"'"+')';
+          condtion.add(b);
+        }
+      }
+      else{
+        String b="(";
+        for(int i=0;i<category.length;i++){
+            b=b+"c.category = "+"'"+category[i]+"'";
+            if(i+1<category.length){
+              b=b+" or ";
+            }
+            else{
+              b=b+")";
+            }
+        }
+        condtion.add(b);
+      }
+    String query='';
+        for(int i=0;i<condtion.length;i++){
+          query=query+condtion[i];
+          if(i+1<condtion.length){
+            query=query+" and ";
+          }
+        }
+    print(query);
   final results = await cosmosDB.documents.query(
     Query(
         query:
-            'SELECT * FROM $collectionId c where c.homepage=@model and c.district=@district and c.region=@region and c.street=@street',
+            'SELECT * FROM $collectionId c where c.district=@district and c.region=@region and c.street=@street and '+query,
         parameters: {
-          'model': model,
           'region': region,
           'district': district,
-          'street':  street,
-          'category': category
+          'street':  street
         }),
     databaseId ,
     collectionId,
@@ -93,37 +182,34 @@ void address_split(a,List c){
 }
 
 // ignore: public_member_api_docs
-Future<List> find_comps(String homepage,String region,String district,String ward,String street,String category,double surface,double width,double length,int toilets,int bedrooms,double price) async{
+Future<List> find_comps(List homepage,String region,String district,String ward,String street,List category,double surface,double width,double length,int toilets,int bedrooms,double price) async{
     Future<List> a=get_street(homepage,region,district,street,category);
     List index=[];
     List b = await a;
     List c=[];
     if(b.length >= 20){
       c=rank_point(b, surface, width, length, toilets, bedrooms, price);
-      Map x={street:c.length};
-      index.add(x);
       if (c.length< 20){
         List d= await get_district(homepage,region,district,ward,category);
-        print(d.length);
         List e=rank_point2(d, 3, surface, width, length, toilets, bedrooms, price);
         c=c+e;
-        List y=haha(e);
+        List y=haha(c);
+        index=index+y;
+      }
+      else{
+        List y=haha(c);
         index=index+y;
       }
     }
     else{
-      c=b;
+      c=c+b;
       List d= await get_district(homepage,region,district,ward,category);
-      Map x={street:c.length};
-      index.add(x);
       List e=rank_point2(d, 3, surface, width, length, toilets, bedrooms, price);
-      List y=haha(e);
-      index=index+y;
       c=c + e;      
+      List y=haha(c);
+      index=index+y;
     }
-    print(index);
-    print(c.length);
-    return [index,c];
+    return index;
 }
 
 List rank_point(List b,double surface,double width,double length,int toilets,int bedrooms,double price){
@@ -131,7 +217,6 @@ List rank_point(List b,double surface,double width,double length,int toilets,int
     for(int i= 0;i<b.length;i++){
       int score=0;
       double b_surface=double.parse(b[i]['surface']);
-      var b_price=b[i]['price'];
       double b_width=0;
       if (b[i]['width'].runtimeType==Null){
         b_width=-1;
@@ -149,8 +234,11 @@ List rank_point(List b,double surface,double width,double length,int toilets,int
       // var b_width=double.parse(b[i]['width']);
       var b_toilets=int.parse(b[i]['toilets']);
       var b_bedrooms=int.parse(b[i]['bedrooms']);
-      if(((price/surface)-0.005) <(b_price/b_surface) && (b_price/b_surface)<((price/surface)+0.005)){
-        score=score+1;
+      if(price!=-1){
+        var b_price=b[i]['price'];
+        if(((price/surface)-0.005) <(b_price/b_surface) && (b_price/b_surface)<((price/surface)+0.005)){
+          score=score+1;
+        }
       }
       if((surface-10) <b_surface && b_surface<(surface+10)){
         score=score+1;
@@ -178,7 +266,6 @@ List rank_point2(List b,int size,double surface,double width,double length,int t
     for(int i= 0;i<b.length;i++){
       int score=0;
       double b_surface=double.parse(b[i]['surface']);
-      var b_price=b[i]['price'];
       double b_width=-1;
       if (b[i]['width'].runtimeType==Null){
         b_width=-1;
@@ -196,8 +283,11 @@ List rank_point2(List b,int size,double surface,double width,double length,int t
       // var b_width=double.parse(b[i]['width']);
       var b_toilets=int.parse(b[i]['toilets']);
       var b_bedrooms=int.parse(b[i]['bedrooms']);
-      if((price/surface-0.005) <(b_price/b_surface) && (b_price/b_surface)<(price/surface+0.005)){
-        score=score+1;
+      if(price!=-1){
+        var b_price=b[i]['price'];
+        if((price/surface-0.005) <(b_price/b_surface) && (b_price/b_surface)<(price/surface+0.005)){
+          score=score+1;
+        }
       }
       if((surface-10) <b_surface && b_surface<(surface+10)){
         score=score+1;
@@ -218,7 +308,6 @@ List rank_point2(List b,int size,double surface,double width,double length,int t
         c.add(b[i]);
       }
     }
-    print(c.length);
 
     return c;
 }
@@ -227,18 +316,24 @@ List haha(List b){
   List values=[];
   for(int i=0;i<b.length;i++){
     if(keys.contains(b[i]['street'])){
-      values[keys.indexOf(b[i]['street'])]+=1;
+      values[keys.indexOf(b[i]['street'])].add(b[i]);
     }
     else{
       keys.add(b[i]['street']);
-      values.add(1);
-    }  
+      List a=[b[i]];
+      values.add(a);
+    }
   }
+  // print(keys.length);
+  // print(values[0].runtimeType);
   List result=[];
   for(int i=0;i<keys.length;i++){
-    Map x={keys[i]:values[i]};
+    Map x={keys[i]:values[i].length};
     result.add(x);
   }
+  // print("**********************");
+  // print(result[0].values.toList()[0].length);
+  // print("**********************");
   return result;
 }
 void main() async{
@@ -247,7 +342,6 @@ void main() async{
     String testa= "Thành phố Hà Nội > Quận Long Biên > Phường 10";
     List result=[];
     address_split(testa, result);
-    print(result);
-    List test= await find_comps("nhadat247.com.vn", "Hồ Chí Minh","d 10","15","Lý Thường Kiệt","nhà",38, 4, 10, 5, 5, 5);
-    print(test[1][2]);
+    List test= await find_comps(["nhadat247.com.vn","chotot.com"], "Hồ Chí Minh","d 10","15","Lý Thường Kiệt",["nhà"],38, 4, 10, 5, 5, -1);
+    print(test);
 }
