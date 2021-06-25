@@ -124,7 +124,8 @@ List get_input(List c){
   }
   print(keys);
   for(int i=0;i<values.length;i++){
-    values[i]=values[i][0]/values[i][1];
+    values[i]=values[i][0]/values[i][1]*1000;
+    values[i]=double.parse((values[i]).toStringAsFixed(2));
   }
   print(values);
   List compare=[];
