@@ -109,7 +109,7 @@ List get_input(List c){
   for(int i=0;i<c.length;i++){
     double c_surface=double.parse(c[i]['surface']);
     var c_price=c[i]['price'];
-    if(c_surface!=0){
+    if(c_surface!=0 && c_price<200){
       {if(keys.contains(c[i]['date'])){
         values[keys.indexOf(c[i]['date'])][0]=values[keys.indexOf(c[i]['date'])][0]+c_price/c_surface;
         values[keys.indexOf(c[i]['date'])][1]=values[keys.indexOf(c[i]['date'])][1]+1;
@@ -158,7 +158,7 @@ List get_input(List c){
 }
 void main() async {
 
-  List a= await  run(["chotot.com","nhadat247"],['nhà'],"Hồ Chí Minh","d 10");
+  List a= await  run(["nhadat247.com.vn"],['nhà'],"Hồ Chí Minh","d 10");
   print(a[0]);
   List b=get_input(a);
   //lay label 
