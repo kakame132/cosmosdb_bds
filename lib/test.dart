@@ -4,8 +4,8 @@ import 'package:cosmosdb/cosmosdb.dart';
 
 void main() {
     final cosmosDB = CosmosDB(
-        masterKey: '9qu5XzdNZTdCNeC2ZWjWqhZbmWVCoT3qFU0M7SS1P82H00dmG8OSvqEnlEGujIpSUB6lGeyc1Q0ERsDuXirLGg==',
-        baseUrl: 'https://synapseliiink.documents.azure.com:443/',
+        masterKey: 'NivTYKZvt56pqDRtq7lQCJJ7Xs7nCo2RzPkOkAkHjUygx3D0dqAHfGF4edxoJFXSOvCzOkwF1PFoGqgYMnFrfw==',
+        baseUrl: 'https://synapselynk1.documents.azure.com:443/',
     );
     // get all documents from a collection
     void run(List homepage,List category,String region,String district,String ward,double price_from,var price_to) async{

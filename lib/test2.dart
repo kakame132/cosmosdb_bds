@@ -4,8 +4,8 @@ import 'package:http/http.dart' as http;
 import 'package:cosmosdb/cosmosdb.dart';
 
 final cosmosDB = CosmosDB(
-  masterKey: '9qu5XzdNZTdCNeC2ZWjWqhZbmWVCoT3qFU0M7SS1P82H00dmG8OSvqEnlEGujIpSUB6lGeyc1Q0ERsDuXirLGg==',
-  baseUrl: 'https://synapseliiink.documents.azure.com:443/',
+  masterKey: 'NivTYKZvt56pqDRtq7lQCJJ7Xs7nCo2RzPkOkAkHjUygx3D0dqAHfGF4edxoJFXSOvCzOkwF1PFoGqgYMnFrfw==',
+  baseUrl: 'https://synapselynk1.documents.azure.com:443/',
 );
 // get all documents from a collection
 Future<List> get_config(String model) async{
@@ -89,16 +89,16 @@ void predict(String type,Map index,int size,String category,String region,String
     Map headers = {'Content-Type': 'application/json'};
     String scoring_uri="";
     if(type=="chotot"){
-    scoring_uri = "http://3b3ce046-1670-45e1-9300-172a430172a1.eastus2.azurecontainer.io/score";
+    scoring_uri = "http://c28e5a9c-af76-4695-8e15-9d88c226ecad.eastus2.azurecontainer.io/score";
     }
     else if(type=="main"){
-    scoring_uri="http://04eb6bc9-f783-425c-946a-7fa5adafb3ca.eastus2.azurecontainer.io/score";
+    scoring_uri="http://be4e6aa3-74df-44ba-98c1-cfb1c4e12ac5.eastus2.azurecontainer.io/score";
     }
     else if(type=="nhadat247"){
-    scoring_uri="http://c2be42d2-165c-496b-a9a8-faba5607fa15.eastus2.azurecontainer.io/score";
+    scoring_uri="http://09cb0d7d-d772-4846-9c58-ec3553d964d4.eastus2.azurecontainer.io/score";
     }
     else if(type=="batdongsan"){
-    scoring_uri="http://a0b4fc63-f8a7-4c9a-8e71-c92c32b82e64.eastus2.azurecontainer.io/score";
+    scoring_uri="http://5de8edf8-3a7c-402b-9758-20d5616c34b4.eastus2.azurecontainer.io/score";
     }
     http.Response response = await http.post(
     Uri.parse(scoring_uri),
