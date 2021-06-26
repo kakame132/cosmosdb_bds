@@ -103,10 +103,13 @@ List get_input(List c){
   List keys=[];
   List values=[];
   for(int i=0;i<c.length;i++){
-    List b=c[i]['date'].split("/");
-    c[i]['date']=b[1]+"/"+b[2];
+    if(c[i]['date']!=null){
+      List b=c[i]['date'].split("/");
+      c[i]['date']=b[1]+"/"+b[2];
+      }
   }
   for(int i=0;i<c.length;i++){
+    if(c[i]['date']!=null){
     double c_surface=double.parse(c[i]['surface']);
     var c_price=c[i]['price'];
     if(c_surface!=0 && c_price<200){
@@ -121,6 +124,7 @@ List get_input(List c){
         values.add(a);
       }}
   }
+    }
   }
   print(keys);
   for(int i=0;i<values.length;i++){
@@ -128,21 +132,21 @@ List get_input(List c){
     values[i]=double.parse((values[i]).toStringAsFixed(2));
   }
   print(values);
-  List compare=[];
-  for(int i=0;i<keys.length;i++){
-    List x=keys[i].split("/");
-    int y=int.parse(x[0])+int.parse(x[1])*100;
-    compare.add(y);
-  }
-  compare.sort((a, b) => a.compareTo(b));
-  print(compare);
+  // List compare=[];
+  // for(int i=0;i<keys.length;i++){
+  //   List x=keys[i].split("/");
+  //   int y=int.parse(x[0])+int.parse(x[1])*100;
+  //   compare.add(y);
+  // }
+  // compare.sort((a, b) => a.compareTo(b));
+  // print(compare);
 
-  List final_keys=List.filled(keys.length, '');
-  List final_values=List.filled(values.length, 0);
+  List final_keys=['09/2020','10/2020','11/2020','12/2020','01/2021','02/2021','03/2021','04/2021','05/2021','06/2021'];
+  List final_values=List.filled(10, 0);
   for(int i=0;i<keys.length;i++){
-    List x=keys[i].split("/");
-    int y=int.parse(x[0])+int.parse(x[1])*100;
-    final_keys[compare.indexOf(y)]=keys[i];
+    // List x=keys[i].split("/");
+    // int y=int.parse(x[0])+int.parse(x[1])*100;
+    // final_keys[compare.indexOf(y)]=keys[i];
     final_values[final_keys.indexOf(keys[i])]=values[keys.indexOf(keys[i])];
   }
   print("*****"); 
@@ -158,7 +162,7 @@ List get_input(List c){
 }
 void main() async {
 
-  List a= await  run(["nhadat247.com.vn"],['nhà'],"Hồ Chí Minh","d 10");
+  List a= await  run(["chotot.com"],['nhà'],"Hồ Chí Minh","d 10");
   print(a[0]);
   List b=get_input(a);
   //lay label 
