@@ -4,8 +4,8 @@ import 'package:http/http.dart' as http;
 import 'package:cosmosdb/cosmosdb.dart';
 
 final cosmosDB = CosmosDB(
-  masterKey: 'NivTYKZvt56pqDRtq7lQCJJ7Xs7nCo2RzPkOkAkHjUygx3D0dqAHfGF4edxoJFXSOvCzOkwF1PFoGqgYMnFrfw==',
-  baseUrl: 'https://synapselynk1.documents.azure.com:443/',
+  masterKey: 'OWypOh21j1xVTQtjCtVq7KgTmG95vEdWGlOUPa90MvVEHSfrkrHBE9IYTEjz97SwMRAVXgG8a5y9vGdCoxKakg==',
+  baseUrl: 'https://synapselynk2.documents.azure.com:443/',
 );
 // get all documents from a collection
 Future<List> get_config(String model) async{
@@ -17,7 +17,7 @@ Future<List> get_config(String model) async{
   final results = await cosmosDB.documents.query(
     Query(
         query:
-            'SELECT * FROM $collectionId c where c.model=@model',
+            'SELECT * FROM $collectionId c where c.name=@model',
         parameters: {
           'model': model
         }),
@@ -27,10 +27,9 @@ Future<List> get_config(String model) async{
   );
   
   Map index_dict=jsonDecode(results.toList().last['list']);
-  int size=results.toList().last['size'];
   // return a;
   // print(jsonDecode(a));
-  return [size,index_dict];
+  return [index_dict];
 }
 void address_split(a,List c){
   List x=a.split(" > ");
@@ -62,43 +61,39 @@ void address_split(a,List c){
   }
 }
 
-void predict(String type,Map index,int size,String category,String region,String district,double surface,double width,double length,int toilets,int bedrooms) async{
-    List output = List.filled(size,0);
-    output[index['surface']] = surface;
-    output[index['width']] = width;
-    output[index['length']] = length;
-    output[index['toilets']] = toilets;
-    output[index['bedrooms']] = bedrooms; 
-    if (index.keys.contains(category)){
-          output[index[category]]=1;}
+void predict(String type,Map index,String category,String region,String district,double surface,double width,double length,int toilets,int bedrooms) async{
+    
     String result_district = district;
+    int input_district=0;
     if (index.keys.contains(result_district)){
-          print(1999);
-          output[index[district]] = 1;}
-    else{
-        print(1);
-        output[index['other_district']] = 1;}
-    String result_region = region;
-    if (index.keys.contains(result_region)){
-          print(2999);
-          output[index[region]] = 1;}
-    else{
-          print(2);
-          output[index['other_region']]=1;}
-    String input_data = json.encode({'data': [output.toList()]});
+          input_district=index[district];}
+    
+    String input_data = json.encode({
+    "data":
+    [
+        {
+            'surface': surface,
+            'bedrooms': bedrooms,
+            'toilets': toilets,
+            'district': input_district,
+            'length': length,
+            'width': width,
+        },
+    ],
+});
     Map headers = {'Content-Type': 'application/json'};
     String scoring_uri="";
     if(type=="chotot"){
-    scoring_uri = "http://c28e5a9c-af76-4695-8e15-9d88c226ecad.eastus2.azurecontainer.io/score";
+    scoring_uri = "http://c17c7863-1b0c-4c01-94ea-351625a7f432.westus.azurecontainer.io/score";
     }
     else if(type=="main"){
-    scoring_uri="http://be4e6aa3-74df-44ba-98c1-cfb1c4e12ac5.eastus2.azurecontainer.io/score";
+    scoring_uri="http://ce68225d-d583-41f6-a6d2-50b0190f91d1.westus.azurecontainer.io/score";
     }
     else if(type=="nhadat247"){
-    scoring_uri="http://09cb0d7d-d772-4846-9c58-ec3553d964d4.eastus2.azurecontainer.io/score";
+    scoring_uri="http://70161814-5433-412c-864d-82dc7e8eb9a9.westus.azurecontainer.io/score";
     }
     else if(type=="batdongsan"){
-    scoring_uri="http://5de8edf8-3a7c-402b-9758-20d5616c34b4.eastus2.azurecontainer.io/score";
+    scoring_uri="http://082d7396-d444-4895-a4d4-7fc0cf8dc096.westus.azurecontainer.io/score";
     }
     http.Response response = await http.post(
     Uri.parse(scoring_uri),
@@ -112,31 +107,34 @@ void predict(String type,Map index,int size,String category,String region,String
 }
 void main() async{
     // ignore: omit_local_variable_types
-    List a= await get_config("main");
-    int main_size=a[0];
-    Map main_dict=a[1];
-    List b= await get_config("chotot");
-    int chotot_size=b[0];
-    Map chotot_dict=b[1];
+    List a= await get_config("region");
+    Map region_dict=a[0];
+    List b= await get_config("district");
+    Map district_dict=b[0];
+    List c= await get_config("category");
+    Map category_dict=c[0];
+    // List b= await get_config("chotot");
+    // int chotot_size=b[0];
+    // Map chotot_dict=b[1];
     
-    List c= await get_config("nhadat247");
-    int nhadat_size=c[0];
-    Map nhadat_dict=c[1];
-    List d= await get_config("batdongsan");
-    int batdongsan_size=d[0];
+    // List c= await get_config("nhadat247");
+    // int nhadat_size=c[0];
+    // Map nhadat_dict=c[1];
+    // List d= await get_config("batdongsan");
+    // int batdongsan_size=d[0];
 
-    Map batdongsan_dict=d[1];
+    // Map batdongsan_dict=d[1];
     
 
-    String testa= "Thành phố Hà Nội > Quận Long Biên";
-    List result=[];
-    address_split(testa, result);
-    print(result);
+    // String testa= "Thành phố Hà Nội > Quận Long Biên";
+    // List result=[];
+    // address_split(testa, result);
+    // print(result);
 
-    predict("main",main_dict, main_size,"nhà",'Hà Nội','d Long Biên', 33, 4,8,3,4);
-    predict("chotot",chotot_dict, chotot_size,"nhà",'Hà Nội','d Long Biên', 33, 4,8,3,4);
-    predict("nhadat247",nhadat_dict, nhadat_size,"nhà",'Hà Nội','d Long Biên', 33, 4,8,3,4);
-    predict("batdongsan",batdongsan_dict, batdongsan_size,"nhà",'Hà Nội','d Long Biên', 33, 4,8,3,4);
+    predict("main",district_dict,"nhà",'Hà Nội','d Long Biên', 33, 4,8,3,4);
+    predict("chotot",district_dict,"nhà",'Hà Nội','d Long Biên', 33, 4,8,3,4);
+    predict("nhadat247",district_dict,"nhà",'Hà Nội','d Long Biên', 33, 4,8,3,4);
+    predict("batdongsan",district_dict,"nhà",'Hà Nội','d Long Biên', 35, 4,8,10,4);
 
      // final results = cosmosDB.documents.query(
     //     Query(

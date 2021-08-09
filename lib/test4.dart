@@ -7,8 +7,8 @@ import 'test.dart';
 
 
 final cosmosDB = CosmosDB(
-        masterKey: 'NivTYKZvt56pqDRtq7lQCJJ7Xs7nCo2RzPkOkAkHjUygx3D0dqAHfGF4edxoJFXSOvCzOkwF1PFoGqgYMnFrfw==',
-        baseUrl: 'https://synapselynk1.documents.azure.com:443/',
+        masterKey: '6XOmPMbWF4IWgJE9ZiEvlSoJGB1Lz3G6L1hVW8zQKn2qqczUe1lcOWmFAYlSufHrSh67QPuZH3mg9ZBnv6lklA==',
+        baseUrl: 'https://synapselink1.documents.azure.com:443/',
     );
 // get all documents from a collection
 Future<List> run(List homepage,List category,String region,String district) async{
@@ -232,13 +232,14 @@ List get_input(List c){
   // compare.sort((a, b) => a.compareTo(b));
   // print(compare);
 
-  List final_keys=['09/2020','10/2020','11/2020','12/2020','01/2021','02/2021','03/2021','04/2021','05/2021','06/2021'];
+  List final_keys=['10/2020','11/2020','12/2020','01/2021','02/2021','03/2021','04/2021','05/2021','06/2021','07/2021'];
   List final_values=List.filled(10, 0);
   for(int i=0;i<keys.length;i++){
     // List x=keys[i].split("/");
     // int y=int.parse(x[0])+int.parse(x[1])*100;
     // final_keys[compare.indexOf(y)]=keys[i];
-    final_values[final_keys.indexOf(keys[i])]=values[keys.indexOf(keys[i])];
+    if(final_keys.contains(keys[i])){
+    final_values[final_keys.indexOf(keys[i])]=values[keys.indexOf(keys[i])];}
   }
   print("*****"); 
   print(final_keys);
@@ -262,12 +263,12 @@ Future<List> get_best_house(List y,List category,String region,String district) 
   print(x[0]);
   List a=await run2(["chotot.com"],category, region, district,x[0]);
   List b=await run2(["nhadat247.com.vn"],category, region, district,x[0]);
-  List c=await run2([""],category, region, district,x[0]);
+  List c=await run2(["batdongsan.com.vn"],category, region, district,x[0]);
   return [a,b,c];
 }
 void main() async {
 
-  List a= await  run(["chotot.com"],['nhà'],"Hồ Chí Minh","d 10");
+  List a= await  run(["chotot.com"],['nhà'],"Hà Nội","d Ba Đình");
   print(a[0]);
   List b=get_input(a);
   //lay label 
